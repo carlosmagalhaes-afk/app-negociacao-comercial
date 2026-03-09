@@ -22,7 +22,7 @@
 ## Fase 3: Frontend - Login e Layout Base
 - [x] Criar tela de login responsiva
 - [x] Criar layout base com marca d'água
-- [ ] Implementar detecção de saída do app (bloqueio de tela)
+- [x] Implementar detecção de saída do app (bloqueio de tela)
 - [x] Criar navegação por abas (Comodato / Desconto)
 - [x] Testar responsividade em iPad 6ª e 10ª geração
 
@@ -48,49 +48,56 @@
 - [x] Implementar API para salvar simulação de desconto
 
 ## Fase 4: Painel do Representante - Histórico
-- [ ] Criar visualização de histórico de simulações
-- [ ] Implementar separação por aba (Comodato / Desconto)
-- [ ] Implementar agrupamento por médico
-- [ ] Implementar botão "Recarregar" para editar simulações
-- [ ] Implementar API para listar histórico do representante
+- [x] Criar visualização de histórico de simulações
+- [x] Implementar separação por aba (Comodato / Desconto)
+- [x] Implementar agrupamento por médico
+- [x] Implementar botão "Recarregar" para editar simulações
+- [x] Implementar API para listar histórico do representante
 
 ## Fase 5: Painel do Gerente Regional
-- [ ] Criar layout do painel do gerente
-- [ ] Implementar visualização de histórico de reps da região
-- [ ] Implementar exibição de margens e faixas de desconto
-- [ ] Implementar filtros (rep, médico, tipo, status, data)
-- [ ] Implementar API para listar histórico da região
+- [x] Criar layout do painel do gerente
+- [x] Implementar visualização de histórico de reps da região
+- [x] Implementar exibição de margens e faixas de desconto
+- [x] Implementar filtros (rep, médico, tipo, status, data)
+- [x] Implementar API para listar histórico da região
 
 ## Fase 6: Painel do Admin - Configurações
-- [ ] Criar layout do painel do admin
-- [ ] Implementar configuração de comodato (pontos, preço, meta)
-- [ ] Implementar configuração de desconto (margem, custo, faixas)
-- [ ] Implementar tabela dinâmica de faixas de desconto
-- [ ] Implementar API para salvar configurações
+- [x] Criar layout do painel do admin
+- [x] Implementar configuração de comodato (pontos, preço, meta)
+- [x] Implementar configuração de desconto (margem, custo, faixas)
+- [x] Implementar tabela dinâmica de faixas de desconto
+- [x] Implementar API para salvar configurações
 
 ## Fase 6: Painel do Admin - Gestão de Usuários
-- [ ] Implementar cadastro de representantes (nome, email, senha, região)
-- [ ] Implementar cadastro de gerentes (nome, email, senha, região)
-- [ ] Implementar desativação de usuários
-- [ ] Implementar API para CRUD de usuários
+- [x] Implementar cadastro de representantes (nome, email, senha, região)
+- [x] Implementar cadastro de gerentes (nome, email, senha, região)
+- [x] Implementar desativação de usuários
+- [x] Implementar API para CRUD de usuários
 
 ## Fase 6: Painel do Admin - Histórico e Analytics
-- [ ] Implementar visualização de histórico completo
-- [ ] Implementar filtros por gerente/região
-- [ ] Implementar API para listar histórico completo
+- [x] Implementar visualização de histórico completo
+- [x] Implementar filtros por gerente/região
+- [x] Implementar API para listar histórico completo
 
 ## Fase 7: Segurança
-- [ ] Implementar marca d'água com nome completo do rep
-- [ ] Implementar bloqueio de tela ao sair do Safari
-- [ ] Implementar expiração de sessão (30 minutos)
-- [ ] Implementar proteção de rotas (sem URLs compartilháveis)
-- [ ] Implementar validação de permissões em todas as rotas
+- [x] Implementar marca d'água com nome completo do rep
+- [x] Implementar bloqueio de tela ao sair do Safari
+- [x] Implementar expiração de sessão (30 minutos)
+- [x] Implementar proteção de rotas (sem URLs compartilháveis)
+- [x] Implementar validação de permissões em todas as rotas
 
 ## Fase 8: Testes e Entrega
-- [ ] Testes de autenticação e roles
-- [ ] Testes de cálculos de comodato
-- [ ] Testes de cálculos de desconto
-- [ ] Testes de responsividade em iPad
-- [ ] Testes de segurança (marca d'água, bloqueio, sessão)
-- [ ] Validação de performance
-- [ ] Documentação final
+- [x] Testes de autenticação e roles
+- [x] Testes de cálculos de comodato
+- [x] Testes de cálculos de desconto
+- [x] Testes de responsividade em iPad
+- [x] Testes de segurança (marca d'água, bloqueio, sessão)
+- [x] Validação de performance
+- [x] Documentação final
+- [x] Seed de dados com usuário admin de teste
+
+## Credenciais de Acesso (Teste)
+- **Email:** admin@negociacao.com
+- **Senha:** admin123
+- **Role:** Administrador
+- **Acesso:** Completo a todos os painéis e funcionalidades

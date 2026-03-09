@@ -4,6 +4,10 @@ import { useLocation } from "wouter";
 import { AppLayout } from "@/components/AppLayout";
 import { CalculadoraComodato } from "@/components/CalculadoraComodato";
 import { SimuladorDesconto } from "@/components/SimuladorDesconto";
+import { HistoricoSimulacoes } from "@/components/HistoricoSimulacoes";
+import { TabelaHistoricoGerente } from "@/components/TabelaHistoricoGerente";
+import { PainelAdminUsuarios } from "@/components/PainelAdminUsuarios";
+import { PainelAdminConfiguracoes } from "@/components/PainelAdminConfiguracoes";
 import { Loader2 } from "lucide-react";
 
 export default function Dashboard() {
@@ -44,32 +48,32 @@ export default function Dashboard() {
       >
         <div className="space-y-6">
           {activeTab === "usuarios" && (
-            <div className="card-professional">
-              <h2 className="text-2xl font-bold mb-4">Gestão de Usuários</h2>
-              <p className="text-muted-foreground">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Gestão de Usuários</h2>
+              <p className="text-muted-foreground mb-6">
                 Gerenciamento de representantes, gerentes e administradores
               </p>
-              {/* TODO: Implementar tabela de usuários */}
+              <PainelAdminUsuarios />
             </div>
           )}
 
           {activeTab === "configuracoes" && (
-            <div className="card-professional">
-              <h2 className="text-2xl font-bold mb-4">Configurações</h2>
-              <p className="text-muted-foreground">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Configurações</h2>
+              <p className="text-muted-foreground mb-6">
                 Configurar comodato, desconto e faixas de preço
               </p>
-              {/* TODO: Implementar formulários de configuração */}
+              <PainelAdminConfiguracoes />
             </div>
           )}
 
           {activeTab === "historico" && (
-            <div className="card-professional">
-              <h2 className="text-2xl font-bold mb-4">Histórico Completo</h2>
-              <p className="text-muted-foreground">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Histórico Completo</h2>
+              <p className="text-muted-foreground mb-6">
                 Visualizar todas as simulações de todos os usuários
               </p>
-              {/* TODO: Implementar tabela de histórico */}
+              <TabelaHistoricoGerente />
             </div>
           )}
         </div>
@@ -151,12 +155,12 @@ export default function Dashboard() {
         )}
 
         {activeTab === "historico" && (
-          <div className="card-professional">
-            <h2 className="text-2xl font-bold mb-4">Histórico de Simulações</h2>
-            <p className="text-muted-foreground">
+          <div>
+            <h2 className="text-2xl font-bold mb-2">Histórico de Simulações</h2>
+            <p className="text-muted-foreground mb-6">
               Visualize todas as suas simulações anteriores
             </p>
-            {/* TODO: Implementar tabela de histórico */}
+            <HistoricoSimulacoes />
           </div>
         )}
       </div>
