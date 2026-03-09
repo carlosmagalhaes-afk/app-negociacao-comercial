@@ -1,31 +1,34 @@
-import { useState } from "react";
-import { useLocation } from "wouter";
+import { useEffect } from "react";
+import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { trpc } from "@/lib/trpc";
+import { getLoginUrl } from "@/const";
 import { Loader2 } from "lucide-react";
 
 export default function Login() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [, navigate] = useLocation();
+  const { user, loading } = useAuth();
 
-  const loginMutation = trpc.auth.login.useMutation({
-    onSuccess: () => {
-      navigate("/dashboard");
-    },
-    onError: (err) => {
-      setError(err.message || "Erro ao fazer login");
-    },
-  });
+  // Se já está autenticado, redireciona para dashboard
+  useEffect(() => {
+    if (user && !loading) {
+      window.location.href = "/dashboard";
+    }
+  }, [user, loading]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    loginMutation.mutate({ email, password });
+  const handleLogin = () => {
+    window.location.href = getLoginUrl();
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-background">
+        <div className="text-center">
+          <Loader2 className="w-8 h-8 animate-spin text-primary mx-auto mb-4" />
+          <p className="text-muted-foreground">Verificando autenticação...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 to-background p-4">
@@ -33,6 +36,9 @@ export default function Login() {
         <div className="p-8">
           {/* Logo/Header */}
           <div className="text-center mb-8">
+            <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+              <span className="text-2xl font-bold text-primary-foreground">NC</span>
+            </div>
             <h1 className="text-3xl font-bold text-primary mb-2">
               Negociação Comercial
             </h1>
@@ -41,65 +47,38 @@ export default function Login() {
             </p>
           </div>
 
-          {/* Login Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Email Input */}
-            <div className="space-y-2">
-              <label htmlFor="email" className="text-sm font-medium">
-                Email
-              </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loginMutation.isPending}
-                className="btn-touch"
-              />
-            </div>
-
-            {/* Password Input */}
-            <div className="space-y-2">
-              <label htmlFor="password" className="text-sm font-medium">
-                Senha
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loginMutation.isPending}
-                className="btn-touch"
-              />
-            </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm">
-                {error}
-              </div>
-            )}
-
-            {/* Submit Button */}
+          {/* Login Button */}
+          <div className="space-y-4">
             <Button
-              type="submit"
-              disabled={loginMutation.isPending}
-              className="w-full btn-touch bg-primary hover:bg-primary/90"
+              onClick={handleLogin}
+              className="w-full btn-touch bg-primary hover:bg-primary/90 text-lg py-6"
             >
-              {loginMutation.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Entrando...
-                </>
-              ) : (
-                "Entrar"
-              )}
+              Entrar com Manus
             </Button>
-          </form>
+          </div>
+
+          {/* Features */}
+          <div className="mt-8 pt-6 border-t border-border">
+            <h3 className="text-sm font-semibold text-foreground mb-3">Funcionalidades:</h3>
+            <ul className="space-y-2 text-xs text-muted-foreground">
+              <li className="flex items-start gap-2">
+                <span className="text-primary font-bold">✓</span>
+                <span>Calculadora de Comodato com sugestões automáticas</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary font-bold">✓</span>
+                <span>Simulador de Desconto com análise de viabilidade</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary font-bold">✓</span>
+                <span>Histórico completo de negociações</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary font-bold">✓</span>
+                <span>Painéis para Gerente Regional e Administrador</span>
+              </li>
+            </ul>
+          </div>
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
