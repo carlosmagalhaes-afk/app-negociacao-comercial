@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO users (openId, email, name, role, ativo, createdAt, updatedAt, lastSignedIn) \nVALUES ('c165702', 'c165702@dac.unicamp.br', 'Administrador', 'admin', true, NOW(), NOW(), NOW())\nON DUPLICATE KEY UPDATE role = 'admin', ativo = true, lastSignedIn = NOW()",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3KwJouhELoVaaxh.root --database FV7s3CticeYwB8uwkSno6V --execute INSERT INTO users (openId, email, name, role, ativo, createdAt, updatedAt, lastSignedIn) \nVALUES ('c165702', 'c165702@dac.unicamp.br', 'Administrador', 'admin', true, NOW(), NOW(), NOW())\nON DUPLICATE KEY UPDATE role = 'admin', ativo = true, lastSignedIn = NOW()",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 116
+}
