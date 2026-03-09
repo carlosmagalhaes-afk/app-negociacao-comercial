@@ -8,6 +8,9 @@ import { HistoricoSimulacoes } from "@/components/HistoricoSimulacoes";
 import { TabelaHistoricoGerente } from "@/components/TabelaHistoricoGerente";
 import { PainelAdminUsuarios } from "@/components/PainelAdminUsuarios";
 import { PainelAdminConfiguracoes } from "@/components/PainelAdminConfiguracoes";
+import { ImportacaoCSV } from "@/components/ImportacaoCSV";
+import { DashboardMetricas } from "@/components/DashboardMetricas";
+import { SincronizacaoCRM } from "@/components/SincronizacaoCRM";
 import { Loader2 } from "lucide-react";
 
 export default function Dashboard() {
@@ -41,6 +44,9 @@ export default function Dashboard() {
         tabs={[
           { id: "usuarios", label: "Usuários" },
           { id: "configuracoes", label: "Configurações" },
+          { id: "importacao", label: "Importação" },
+          { id: "metricas", label: "Métricas" },
+          { id: "crm", label: "CRM" },
           { id: "historico", label: "Histórico" },
         ]}
         activeTab={activeTab}
@@ -64,6 +70,36 @@ export default function Dashboard() {
                 Configurar comodato, desconto e faixas de preço
               </p>
               <PainelAdminConfiguracoes />
+            </div>
+          )}
+
+          {activeTab === "importacao" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Importação em Lote</h2>
+              <p className="text-muted-foreground mb-6">
+                Importar múltiplos usuários e configurações via CSV
+              </p>
+              <ImportacaoCSV />
+            </div>
+          )}
+
+          {activeTab === "metricas" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Dashboard de Métricas</h2>
+              <p className="text-muted-foreground mb-6">
+                Visualizar gráficos e indicadores de desempenho
+              </p>
+              <DashboardMetricas />
+            </div>
+          )}
+
+          {activeTab === "crm" && (
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Sincronização com CRM</h2>
+              <p className="text-muted-foreground mb-6">
+                Conectar e sincronizar dados com seu CRM
+              </p>
+              <SincronizacaoCRM />
             </div>
           )}
 

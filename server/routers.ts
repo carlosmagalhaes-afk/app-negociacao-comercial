@@ -231,6 +231,72 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         return db.deleteFaixaDesconto(input.id);
       }),
+
+    importarCSV: adminProcedure
+      .input(
+        z.object({
+          tipo: z.enum(["usuarios", "configuracoes"] as const),
+          dados: z.array(z.record(z.string(), z.string())),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const resultados = { sucesso: 0, erros: 0, mensagens: [] as string[] };
+
+        if (input.tipo === "usuarios") {
+          for (const linha of input.dados) {
+            try {
+              const { nome, email, role, regiao } = linha;
+              if (!nome || !email || !role) {
+                resultados.erros++;
+                resultados.mensagens.push(`Linha invalida: ${JSON.stringify(linha)}`);
+                continue;
+              }
+              await db.createUser({
+                openId: `import-${Date.now()}-${Math.random()}`,
+                name: (nome as string) || null,
+                email: (email as string) || null,
+                role: (role as any) || "representante",
+                regiao: (regiao as string) || null,
+                ativo: true,
+              });
+              resultados.sucesso++;
+            } catch (err: any) {
+              resultados.erros++;
+              resultados.mensagens.push(err.message);
+            }
+          }
+        } else if (input.tipo === "configuracoes") {
+          for (const linha of input.dados) {
+            try {
+              const { produtoId, pontos, precoVenda, metaPontos } = linha;
+              if (produtoId && pontos && precoVenda && metaPontos) {
+                const config = await db.getConfigComodato();
+                const pId = parseInt(produtoId as string);
+                const existingConfig = config.find((c) => c.produtoId === pId);
+                if (existingConfig) {
+                  await db.updateConfigComodato(existingConfig.id, {
+                    pontos: parseInt(pontos as string) || 0,
+                    precoVenda: (precoVenda as string).toString(),
+                    metaPontos: parseInt(metaPontos as string) || 0,
+                  });
+                  resultados.sucesso++;
+                } else {
+                  resultados.erros++;
+                  resultados.mensagens.push(`Produto ${produtoId} nao encontrado`);
+                }
+              } else {
+                resultados.erros++;
+                resultados.mensagens.push(`Configuracao invalida: ${JSON.stringify(linha)}`);
+              }
+            } catch (err: any) {
+              resultados.erros++;
+              resultados.mensagens.push(err.message);
+            }
+          }
+        }
+
+        return resultados;
+      }),
   }),
 
   /**

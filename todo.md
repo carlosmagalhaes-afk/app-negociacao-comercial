@@ -101,3 +101,27 @@
 - **Senha:** admin123
 - **Role:** Administrador
 - **Acesso:** Completo a todos os painéis e funcionalidades
+
+## Fase 9: Importação em Lote (CSV)
+- [x] Criar componente de upload de CSV
+- [x] Implementar parser de CSV para usuários
+- [x] Implementar parser de CSV para configurações
+- [x] Validar dados antes de importar
+- [x] Exibir relatório de sucesso/erro
+- [x] Adicionar botão de importação no painel admin
+
+## Fase 10: Dashboard de Métricas
+- [x] Criar página de dashboard com gráficos
+- [x] Implementar gráfico de taxa de aceitação de comodato
+- [x] Implementar gráfico de desconto médio concedido
+- [x] Implementar gráfico de representantes top performers
+- [x] Implementar filtros por período (dia, semana, mês)
+- [x] Adicionar cards com KPIs principais
+
+## Fase 11: Sincronização com CRM
+- [x] Criar tela de configuração de CRM
+- [x] Implementar integração com CRM (webhook/API)
+- [x] Criar endpoint para receber dados de médicos
+- [x] Implementar sincronização automática
+- [x] Adicionar log de sincronizações
+- [x] Criar interface para gerenciar sincronizações
