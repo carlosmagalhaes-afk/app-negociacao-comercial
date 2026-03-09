@@ -114,13 +114,11 @@ export function SimuladorDesconto({ onSave }: CalculadoraProps) {
 
     saveMutation.mutate({
       nomeMedico,
-      modo,
-      descontoSolicitado: descontoSolicitado.toFixed(2),
+      descontoSolicitado: Number(descontoSolicitado),
       viavel,
-      descontoMaximoPossivel: descontoMaximoPossivel.toFixed(2),
-      valorSemDesconto: valorSemDesconto.toFixed(2),
       valorComDesconto: valorComDesconto.toFixed(2),
-      detalhes,
+      valorSemDesconto: valorSemDesconto.toFixed(2),
+      modo,
       status,
     });
   };

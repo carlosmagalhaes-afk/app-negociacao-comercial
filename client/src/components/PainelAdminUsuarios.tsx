@@ -16,7 +16,7 @@ export function PainelAdminUsuarios() {
     regiao: "",
   });
 
-  const listQuery = trpc.admin.listUsers.useQuery();
+  const listQuery = trpc.admin.getUsers.useQuery();
   const createMutation = trpc.admin.createUser.useMutation({
     onSuccess: () => {
       setFormData({ name: "", email: "", password: "", role: "representante", regiao: "" });
@@ -35,11 +35,7 @@ export function PainelAdminUsuarios() {
     createMutation.mutate(formData);
   };
 
-  const usuarios = [
-    ...(listQuery.data?.representantes || []),
-    ...(listQuery.data?.gerentes || []),
-    ...(listQuery.data?.admins || []),
-  ];
+  const usuarios = listQuery.data || [];
 
   return (
     <div className="space-y-6">
@@ -198,7 +194,7 @@ export function PainelAdminUsuarios() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => deleteMutation.mutate({ userId: user.id })}
+                        onClick={() => deleteMutation.mutate({ id: user.id })}
                         disabled={deleteMutation.isPending}
                         className="btn-touch"
                       >

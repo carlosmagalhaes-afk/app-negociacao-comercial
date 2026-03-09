@@ -105,7 +105,6 @@ export function CalculadoraComodato({ onSave }: CalculadoraProps) {
       metaPontos,
       qualifica,
       valorTotal: valorTotal.toFixed(2),
-      detalhes,
       status,
     });
   };

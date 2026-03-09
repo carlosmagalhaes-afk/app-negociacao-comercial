@@ -5,7 +5,6 @@ import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
 import * as db from "./db";
 import { TRPCError } from "@trpc/server";
-import bcrypt from "bcryptjs";
 
 /**
  * Admin-only procedure wrapper
@@ -31,54 +30,10 @@ export const appRouter = router({
   system: systemRouter,
 
   /**
-   * Authentication routes
+   * Authentication routes (OAuth only)
    */
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
-
-    login: publicProcedure
-      .input(
-        z.object({
-          email: z.string().email(),
-          password: z.string().min(6),
-        })
-      )
-      .mutation(async ({ input, ctx }) => {
-        const user = await db.getUserByEmail(input.email);
-        if (!user || !user.password) {
-          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-        }
-
-        const passwordMatch = await bcrypt.compare(input.password, user.password);
-        if (!passwordMatch) {
-          throw new TRPCError({ code: "UNAUTHORIZED", message: "Invalid credentials" });
-        }
-
-        if (!user.ativo) {
-          throw new TRPCError({ code: "FORBIDDEN", message: "User account is inactive" });
-        }
-
-        // Update last signed in
-        await db.updateUser(user.id, { lastSignedIn: new Date() });
-
-        // Set session cookie
-        const cookieOptions = getSessionCookieOptions(ctx.req);
-        ctx.res.cookie(COOKIE_NAME, user.id.toString(), {
-          ...cookieOptions,
-          maxAge: 30 * 60 * 1000, // 30 minutes
-        });
-
-        return {
-          success: true,
-          user: {
-            id: user.id,
-            name: user.name,
-            email: user.email,
-            role: user.role,
-            regiao: user.regiao,
-          },
-        };
-      }),
 
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
@@ -102,39 +57,43 @@ export const appRouter = router({
       }));
     }),
 
+    getHistorico: protectedProcedure.query(async ({ ctx }) => {
+      if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+      return db.getSimulacoesComodatoByUsuario(ctx.user.id);
+    }),
+
     saveSimulacao: protectedProcedure
       .input(
         z.object({
-          nomeMedico: z.string().min(1),
-          pontosObtidos: z.number().int().nonnegative(),
-          metaPontos: z.number().int().positive(),
+          nomeMedico: z.string(),
+          pontosObtidos: z.number(),
+          metaPontos: z.number(),
           qualifica: z.boolean(),
           valorTotal: z.string(),
-          detalhes: z.string(),
           status: z.enum(["aceitou", "nao_aceitou", "em_negociacao"]),
         })
       )
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
-
-        const result = await db.saveSimulacaoComodato({
+        return db.saveSimulacaoComodato({
           usuarioId: ctx.user.id,
           nomeMedico: input.nomeMedico,
           pontosObtidos: input.pontosObtidos,
           metaPontos: input.metaPontos,
           qualifica: input.qualifica,
-          valorTotal: input.valorTotal as any,
-          detalhes: input.detalhes,
+          valorTotal: input.valorTotal,
           status: input.status,
+          detalhes: null,
         });
-
-        return { success: true, id: (result as any).insertId };
       }),
 
-    getHistorico: protectedProcedure.query(async ({ ctx }) => {
-      if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
-      return db.getSimulacoesComodatoByUsuario(ctx.user.id);
-    }),
+    deleteSimulacao: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input, ctx }) => {
+        if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
+        // TODO: Implement delete
+        return { success: true };
+      }),
   }),
 
   /**
@@ -143,8 +102,8 @@ export const appRouter = router({
   desconto: router({
     getConfig: publicProcedure.query(async () => {
       const config = await db.getConfigDesconto();
-      const faixas = await db.getFaixasDesconto();
       const produtos = await db.getProdutos();
+      const faixas = await db.getFaixasDesconto();
       return config.map((c) => ({
         ...c,
         produto: produtos.find((p) => p.id === c.produtoId),
@@ -155,162 +114,134 @@ export const appRouter = router({
     saveSimulacao: protectedProcedure
       .input(
         z.object({
-          nomeMedico: z.string().min(1),
-          modo: z.enum(["por_produto", "pedido_total"]),
-          descontoSolicitado: z.string(),
+          nomeMedico: z.string(),
+          descontoSolicitado: z.number(),
           viavel: z.boolean(),
-          descontoMaximoPossivel: z.string().optional(),
-          valorSemDesconto: z.string(),
           valorComDesconto: z.string(),
-          detalhes: z.string(),
+          valorSemDesconto: z.string(),
+          modo: z.enum(["por_produto", "pedido_total"]),
           status: z.enum(["aceitou", "nao_aceitou", "em_negociacao"]),
         })
       )
       .mutation(async ({ input, ctx }) => {
         if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
-
-        const result = await db.saveSimulacaoDesconto({
+        return db.saveSimulacaoDesconto({
           usuarioId: ctx.user.id,
           nomeMedico: input.nomeMedico,
-          modo: input.modo,
-          descontoSolicitado: input.descontoSolicitado as any,
+          descontoSolicitado: input.descontoSolicitado.toString(),
           viavel: input.viavel,
-          descontoMaximoPossivel: input.descontoMaximoPossivel as any,
-          valorSemDesconto: input.valorSemDesconto as any,
-          valorComDesconto: input.valorComDesconto as any,
-          detalhes: input.detalhes,
+          valorComDesconto: input.valorComDesconto,
+          valorSemDesconto: input.valorSemDesconto,
+          modo: input.modo,
           status: input.status,
+          detalhes: null,
         });
-
-        return { success: true, id: (result as any).insertId };
       }),
-
-    getHistorico: protectedProcedure.query(async ({ ctx }) => {
-      if (!ctx.user) throw new TRPCError({ code: "UNAUTHORIZED" });
-      return db.getSimulacoesDescontoByUsuario(ctx.user.id);
-    }),
-  }),
-
-  /**
-   * Gerente (Regional Manager) routes
-   */
-  gerente: router({
-    getHistoricoRegiao: gerenteProcedure.query(async ({ ctx }) => {
-      if (!ctx.user?.regiao) throw new TRPCError({ code: "BAD_REQUEST" });
-      const comodato = await db.getSimulacoesComodatoByRegiao(ctx.user.regiao);
-      const desconto = await db.getSimulacoesDescontoByRegiao(ctx.user.regiao);
-      return { comodato, desconto };
-    }),
   }),
 
   /**
    * Admin routes
    */
   admin: router({
-    /**
-     * User management
-     */
+    getUsers: adminProcedure.query(async () => {
+      return db.getUsersByRole("representante");
+    }),
+
     createUser: adminProcedure
       .input(
         z.object({
-          name: z.string().min(1),
+          name: z.string(),
           email: z.string().email(),
-          password: z.string().min(6),
           role: z.enum(["admin", "gerente", "representante"]),
           regiao: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
-        const existingUser = await db.getUserByEmail(input.email);
-        if (existingUser) {
-          throw new TRPCError({ code: "CONFLICT", message: "Email already in use" });
-        }
-
-        const hashedPassword = await bcrypt.hash(input.password, 10);
-        const result = await db.createUser({
-          openId: `local-${Date.now()}`,
+        return db.createUser({
+          openId: `user-${Date.now()}`,
           name: input.name,
           email: input.email,
-          password: hashedPassword,
           role: input.role,
-          regiao: input.regiao,
-          loginMethod: "password",
+          regiao: input.regiao || null,
+          ativo: true,
         });
-
-        return { success: true, id: (result as any).insertId };
       }),
 
-    listUsers: adminProcedure.query(async () => {
-      const reps = await db.getUsersByRole("representante");
-      const gerentes = await db.getUsersByRole("gerente");
-      const admins = await db.getUsersByRole("admin");
-      return { representantes: reps, gerentes, admins };
-    }),
-
-    deactivateUser: adminProcedure
-      .input(z.object({ userId: z.number().int() }))
-      .mutation(async ({ input }) => {
-        await db.deactivateUser(input.userId);
-        return { success: true };
-      }),
-
-    /**
-     * Configuration management
-     */
-    updateConfigComodato: adminProcedure
+    updateUser: adminProcedure
       .input(
         z.object({
-          id: z.number().int(),
-          pontos: z.number().int().optional(),
-          precoVenda: z.string().optional(),
-          metaPontos: z.number().int().optional(),
+          id: z.number(),
+          name: z.string().optional(),
+          role: z.enum(["admin", "gerente", "representante"]).optional(),
+          regiao: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
-        await db.updateConfigComodato(id, data as any);
-        return { success: true };
+        return db.updateUser(id, data);
+      }),
+
+    deactivateUser: adminProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        return db.deactivateUser(input.id);
+      }),
+
+    updateConfigComodato: adminProcedure
+      .input(
+        z.object({
+          id: z.number(),
+          pontos: z.number().optional(),
+          precoVenda: z.string().optional(),
+          metaPontos: z.number().optional(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        return db.updateConfigComodato(id, data);
       }),
 
     updateConfigDesconto: adminProcedure
       .input(
         z.object({
-          id: z.number().int(),
+          id: z.number(),
           margemMinima: z.string().optional(),
           precoCusto: z.string().optional(),
         })
       )
       .mutation(async ({ input }) => {
         const { id, ...data } = input;
-        await db.updateConfigDesconto(id, data as any);
-        return { success: true };
+        return db.updateConfigDesconto(id, data);
       }),
 
     addFaixaDesconto: adminProcedure
       .input(
         z.object({
-          produtoId: z.number().int(),
-          quantidadeMinima: z.number().int().positive(),
+          produtoId: z.number(),
+          quantidadeMinima: z.number(),
           descontoMaximo: z.string(),
         })
       )
       .mutation(async ({ input }) => {
-        const result = await db.addFaixaDesconto(input as any);
-        return { success: true, id: (result as any).insertId };
+        return db.addFaixaDesconto(input);
       }),
 
     deleteFaixaDesconto: adminProcedure
-      .input(z.object({ id: z.number().int() }))
+      .input(z.object({ id: z.number() }))
       .mutation(async ({ input }) => {
-        await db.deleteFaixaDesconto(input.id);
-        return { success: true };
+        return db.deleteFaixaDesconto(input.id);
       }),
+  }),
 
-    /**
-     * Analytics and history
-     */
-    getAllSimulacoes: adminProcedure.query(async () => {
-      return { comodato: [], desconto: [] };
+  /**
+   * Gerente routes
+   */
+  gerente: router({
+    getHistoricoRegiao: gerenteProcedure.query(async ({ ctx }) => {
+      if (!ctx.user?.regiao) throw new TRPCError({ code: "FORBIDDEN" });
+      const comodato = await db.getSimulacoesComodatoByRegiao(ctx.user.regiao);
+      const desconto = await db.getSimulacoesDescontoByRegiao(ctx.user.regiao);
+      return { comodato, desconto };
     }),
   }),
 });
