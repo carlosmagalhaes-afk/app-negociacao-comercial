@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import React from "react";
 import { useAuth } from "@/_core/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,6 +8,17 @@ import { Loader2 } from "lucide-react";
 
 export default function Login() {
   const { user, loading } = useAuth();
+  const [oauthError, setOauthError] = React.useState<string | null>(null);
+
+  // Verificar se há erro de OAuth na URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error") === "oauth_failed") {
+      setOauthError("Erro ao fazer login. Tente novamente.");
+      // Limpar a URL
+      window.history.replaceState({}, document.title, "/login");
+    }
+  }, []);
 
   // Se já está autenticado, redireciona para dashboard
   useEffect(() => {
@@ -79,6 +91,13 @@ export default function Login() {
               </li>
             </ul>
           </div>
+
+          {/* Error Message */}
+          {oauthError && (
+            <div className="p-3 bg-destructive/10 border border-destructive/30 rounded-lg text-destructive text-sm mt-4">
+              {oauthError}
+            </div>
+          )}
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-border text-center text-xs text-muted-foreground">
