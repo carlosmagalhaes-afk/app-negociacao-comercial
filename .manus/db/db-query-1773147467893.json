@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO users (openId, name, email, password, loginMethod, role, regiao, ativo, createdAt, updatedAt, lastSignedIn) VALUES ('rep-sp-001', 'Representante São Paulo', 'representante.sp@negociacao.com', NULL, 'manus', 'representante', 'São Paulo', true, NOW(), NOW(), NOW());",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway04.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3KwJouhELoVaaxh.root --database FV7s3CticeYwB8uwkSno6V --execute INSERT INTO users (openId, name, email, password, loginMethod, role, regiao, ativo, createdAt, updatedAt, lastSignedIn) VALUES ('rep-sp-001', 'Representante São Paulo', 'representante.sp@negociacao.com', NULL, 'manus', 'representante', 'São Paulo', true, NOW(), NOW(), NOW());",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 65
+}
